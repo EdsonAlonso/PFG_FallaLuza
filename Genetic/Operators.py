@@ -2,6 +2,7 @@ import numpy as np
 import random
 from abc import ABC,abstractmethod
 import pandas as pd
+from modules.auxiliar import sigmoide
 
 
 class _OperatorInterface( ABC ):
@@ -17,8 +18,7 @@ class _RoletaOperator( _OperatorInterface ):
         :param params: array contendo a função de ajuste aplicada à população
         :return: pai: array contendo os candidatos a pais
         """
-
-        prob = sigmoid( params )
+        prob = sigmoide( params[ 0 ] )
         pai = [ ]
 
         for i in range( len( prob ) ):
@@ -26,7 +26,7 @@ class _RoletaOperator( _OperatorInterface ):
             if prob[ i ] >= r:
                 pai.append( i )
 
-    return np.array( pai )
+        return np.array( pai )
 
 class _CruzamentoOperator( _OperatorInterface ):
 
@@ -39,7 +39,8 @@ class _CruzamentoOperator( _OperatorInterface ):
         pesopai = random.random( )
         pesomae = random.random( )
 
-        final = len( params )
+        p = params[ 0 ]
+        final = len( p )
 
         npar = np.size( p,1 )
         npop = np.size( p,0 )
@@ -89,17 +90,17 @@ class _ElitismoOperator( _OperatorInterface ):
         """
         p,fitp,filhos,fitf = params
 
-        ini = len( p ) - len( filhos )
-        pop1 = np.copy( p )
-        fit1 = np.copy( fitp )
+        ini = len(p) - len(filhos)
+        pop1 = np.copy(p)
+        fit1 = np.copy(fitp)
 
-        df = pd.DataFrame( fitp )
-        x = df.sort_values( 0,ascending=True )
-        piores = x.index[ len( x ) - len( filhos ), : ]
+        df = pd.DataFrame(fitp)
+        x = df.sort_values(0, ascending=True)
+        piores = x.index[len(x) - len(filhos):]
 
-        for index, pos in enumerate( piores ):
-            pop1[ pos ] = filhos[ index ]
-            fit1[ pos ] = fitf[ index ]
+        for index, pos in enumerate(piores):
+            pop1[pos] = filhos[index]
+            fit1[pos] = fitf[index]
 
         return pop1, fit1
 
@@ -114,6 +115,6 @@ class OperatorFactory:
         if name == 'Cruzamento':
             return _CruzamentoOperator( )
         if name == 'Mutacao':
-            return _MutatacaoOperator( )
+            return _MutacaoOperator( )
         if name == 'Elitismo':
             return _ElitismoOperator( )
