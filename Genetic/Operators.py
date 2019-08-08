@@ -80,7 +80,7 @@ class _MutacaoOperator( _OperatorInterface ):
 
         return p
 
-class _Elitism( _OperatorInterface ):
+class _ElitismoOperator( _OperatorInterface ):
 
     def run( self, *params ):
         """
@@ -102,7 +102,7 @@ class _Elitism( _OperatorInterface ):
             fit1[ pos ] = fitf[ index ]
 
         return pop1, fit1
-    
+
 
 
 
