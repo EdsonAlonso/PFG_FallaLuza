@@ -9,6 +9,11 @@
 import math
 import numpy as np
 
+def sigmoide(x):
+    a = 1.0
+    sig = 1.0 - (1.0 / (1.0 + np.exp(-a * x)))
+    return sig
+
 def sec(angle):
     '''function that computes the secant of a specific angle in radians
        input: a float representing the angle, in radians.'''
