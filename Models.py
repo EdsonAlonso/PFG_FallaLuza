@@ -24,6 +24,7 @@ class sphere( _BaseModel_ ):
         self.x = x
         self.z = z
         self.mass = mass
+        self.params = [ self.x, self.z, self.mass ]
 
     def gz( self, x_obs, y_obs ):
         self.__xobs__ = x_obs
@@ -107,4 +108,3 @@ class semiFiniteSheet( _BaseModel_ ):
 
     def plotModel( self ):
         pass
-    
