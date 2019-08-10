@@ -19,14 +19,14 @@ class _RoletaOperator( _OperatorInterface ):
         :return: pai: array contendo os candidatos a pais
         """
         prob = sigmoide( params[ 0 ] )
-        pai = [ ]
+        self.pai = [ ]
 
         for i in range( len( prob ) ):
             r = random.random( )
             if prob[ i ] >= r:
-                pai.append( i )
+                self.pai.append( i )
 
-        return np.array( pai )
+        return np.array( self.pai )
 
 class _CruzamentoOperator( _OperatorInterface ):
 
@@ -39,24 +39,24 @@ class _CruzamentoOperator( _OperatorInterface ):
         pesopai = random.random( )
         pesomae = random.random( )
 
-        p = params[ 0 ]
-        final = len( p )
+        self.p = params[ 0 ]
+        final = len( self.p )
 
-        npar = np.size( p,1 )
-        npop = np.size( p,0 )
+        npar = np.size( self.p,1 )
+        npop = np.size( self.p,0 )
 
         if npop%2 != 0:
             npop = npop - 1
-            final = len( p ) - 1
+            final = len( self.p ) - 1
 
         nfilhos = int( npop/2 )
 
-        pais = p[ 0:nfilhos, : ]
-        maes = p[ nfilhos:final, : ]
+        pais = self.p[ 0:nfilhos, : ]
+        maes = self.p[ nfilhos:final, : ]
 
-        filhos = ( pesomae*maes + pesopai*pais )/( pesomae + pesopai )
+        self.filhos = ( pesomae*maes + pesopai*pais )/( pesomae + pesopai )
 
-        return filhos
+        return self.filhos
 
 class _MutacaoOperator( _OperatorInterface ):
 
@@ -65,10 +65,10 @@ class _MutacaoOperator( _OperatorInterface ):
         :param params: (p, probmut, minp, maxp)
         :return: p: população mutada
         """
-        p,probmut,minp,maxp = params
+        self.p,probmut,minp,maxp = params
 
-        npar = np.size( p,1 )
-        npop = np.size( p,0 )
+        npar = np.size( self.p,1 )
+        npop = np.size( self.p,0 )
 
         for i in range( npop ):
             rand = random.random( )
@@ -77,9 +77,9 @@ class _MutacaoOperator( _OperatorInterface ):
                 a = minp[ ipar ]
                 b = maxp[ ipar ]
 
-                p[ i,ipar ] = p[ i,ipar ]*random.uniform( a,b )/( b-a )
+                self.p[ i,ipar ] = self.p[ i,ipar ]*random.uniform( a,b )/( b-a )
 
-        return p
+        return self.p
 
 class _ElitismoOperator( _OperatorInterface ):
 
@@ -91,18 +91,18 @@ class _ElitismoOperator( _OperatorInterface ):
         p,fitp,filhos,fitf = params
 
         ini = len(p) - len(filhos)
-        pop1 = np.copy(p)
-        fit1 = np.copy(fitp)
+        self.pop1 = np.copy(p)
+        self.fit1 = np.copy(fitp)
 
         df = pd.DataFrame(fitp)
         x = df.sort_values(0, ascending=True)
         piores = x.index[len(x) - len(filhos):]
 
         for index, pos in enumerate(piores):
-            pop1[pos] = filhos[index]
-            fit1[pos] = fitf[index]
+            self.pop1[pos] = filhos[index]
+            self.fit1[pos] = fitf[index]
 
-        return pop1, fit1
+        return self.pop1, self.fit1
 
 
 
