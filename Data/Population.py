@@ -13,13 +13,27 @@ class Fontes:
         self.maxbounds = maxbounds
         npar = len(self.minbounds) + 1
 
-        self.fontes = np.zeros( ( nfontes, npar ) )
+        self.fontes = { }
+        self.temp = np.zeros( ( nfontes, npar ) )
 
         for i in range( nfontes ):
             x = random.uniform( self.minbounds[ 0 ], self.maxbounds[ 0 ] )
             z = random.uniform( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
             s1 = sphere(x, z, 1e6)
             for j in range( npar ):
-                self.fontes[ i,j ] = s1.params[ j ]
+                self.temp[ i,j ] = s1.params[ j ]
+            self.fontes[ s1 ] = self.temp[ i ]
 
+
+    def Gz( self, xobs, zobs ):
+        self.gz = 0
+        for fonte in self.fontes:
+            self.gz += fonte.gz( xobs, zobs )
+
+        return self.gz
+
+    def asDict( self ):
         return self.fontes
+
+    def asArray( self ):
+        return self.temp
