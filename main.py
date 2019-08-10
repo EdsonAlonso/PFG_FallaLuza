@@ -1,6 +1,7 @@
 from Genetic.Operators import *
 import numpy as np
 from Data.Population import *
+import matplotlib.pyplot as plt
 
 
 def operator(name, *params):
@@ -12,6 +13,8 @@ def alp(x, y):
 
 
 if __name__ == "__main__":
+    xobs = np.linspace( -10,10,300 )
+    zobs = np.zeros( len( xobs ) )
     xmin, xmax = 0.0, 10.0
     ymin, ymax = 0.0, 10.0
     min_bounds = [xmin, ymin]
@@ -25,17 +28,21 @@ if __name__ == "__main__":
 
     fit = np.zeros((npop))
 
-    pop = Fontes( ).Gera( min_bounds, max_bounds )
+    pop = Fontes( )
+    pop.Gera( min_bounds, max_bounds, nfontes= npop )
+    fontes = pop.asArray( )
+    gz = pop.Gz( xobs, zobs )
+
     for n in range(ngera):
         # Etapa 02: Avaliacao da funcao objetivo:
-        fit = alp(pop[:, 0], pop[:, 1])
+        fit = alp( fontes[:, 0], fontes[:, 1] )
 
         # Etapa 03: Selecao dos pais (roleta viciada)
         pais = operator('Roleta',fit)
 
         # Etapa 04: Definicao da subpopulacao para o cruzamento:
         pcruz = np.zeros((len(pais), npar))
-        pcruz = pop[pais, 0:2]
+        pcruz = fontes[pais, 0:2]
 
         # Etapa 05: Cruzamento para criacao dos filhos:
         filhos = operator('Cruzamento',pcruz)
@@ -48,9 +55,9 @@ if __name__ == "__main__":
         fit_filhos = alp(filhos[:, 0], filhos[:, 1])
 
         # Etapa 08: Elitismo para colocar os filhos na populacao original:
-        pop, fit = operator('Elitismo',pop[:,0:2], fit, filhos, fit_filhos)
+        fontes, fit = operator('Elitismo',fontes[:,0:2], fit, filhos, fit_filhos)
 
     # Etapa 09: convergencia:
     iwinner = np.argmin(fit)
-    best.append(pop[iwinner, :])
+    best.append(fontes[iwinner, :])
     print(best)
