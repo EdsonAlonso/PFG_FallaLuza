@@ -26,11 +26,11 @@ class sphere( _BaseModel_ ):
         self.mass = mass
         self.params = [ self.x, self.z, self.mass ]
 
-    def gz( self, x_obs, y_obs ):
+    def gz( self, x_obs, z_obs ):
         self.__xobs__ = x_obs
-        self.__yobs__ = y_obs
-        num = ( self.mass*( self.__yobs__ - self.z ) )
-        den = ( ( self.__xobs__ - self.x )**2 + ( self.__yobs__ - self.z)**2 )
+        self.__zobs__ = z_obs
+        num = ( self.mass*( self.__zobs__ - self.z ) )
+        den = ( ( self.__xobs__ - self.x )**2 + ( self.__zobs__ - self.z)**2 )
         self.__gz__ =  -( _BaseModel_._gravConst*( num/den ) )
         return self.__gz__
 
