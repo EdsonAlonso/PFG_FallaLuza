@@ -85,7 +85,7 @@ class _ElitismoOperator( _OperatorInterface ):
 
     def run( self, *params ):
         """
-        :param params: (p,fitp,filhos,fitf)
+        :param params: (pop,fitp,filhos,fitf)
         :return: pop1,fit1
         """
         p,fitp,filhos,fitf = params
