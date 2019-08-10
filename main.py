@@ -1,25 +1,10 @@
 from Genetic.Operators import *
 import numpy as np
+from Data.Population import *
+
 
 def operator(name, *params):
     return OperatorFactory().getOperator(name).run(*params)
-
-def pop_inicial(parmin, parmax, npop):
-    """
-    parmin: lista com o limite inferior de todos os parametros do problema:
-    parmax:lista com o limite superior de todos os parametros do problema:
-    npop: numero inteiro indicando o numero total de individuos na populacao:
-    """
-    # numero total de parametros do problema:
-    npar = len(parmin)
-    pop = np.zeros((npop, npar))
-
-    for i in range(npar):
-        for j in range(npop):
-            pop[j, i] = random.uniform(parmin[i], parmax[i])
-
-    return pop
-
 
 def alp(x, y):
     fun = -(x * y) ** (0.5) * np.sin(x) * np.sin(y)
@@ -33,15 +18,14 @@ if __name__ == "__main__":
     max_bounds = [xmax, ymax]
     npop = 300
     pmut = 0.1
-    ngera = int(2e4)
+    ngera = int(100)
     npar = len(min_bounds)
     conv = []
     best = []
 
     fit = np.zeros((npop))
 
-    pop = pop_inicial(min_bounds,max_bounds,npop)
-
+    pop = Fontes( ).Gera( min_bounds, max_bounds )
     for n in range(ngera):
         # Etapa 02: Avaliacao da funcao objetivo:
         fit = alp(pop[:, 0], pop[:, 1])
@@ -51,7 +35,7 @@ if __name__ == "__main__":
 
         # Etapa 04: Definicao da subpopulacao para o cruzamento:
         pcruz = np.zeros((len(pais), npar))
-        pcruz = pop[pais, :]
+        pcruz = pop[pais, 0:2]
 
         # Etapa 05: Cruzamento para criacao dos filhos:
         filhos = operator('Cruzamento',pcruz)
@@ -64,7 +48,7 @@ if __name__ == "__main__":
         fit_filhos = alp(filhos[:, 0], filhos[:, 1])
 
         # Etapa 08: Elitismo para colocar os filhos na populacao original:
-        pop, fit = operator('Elitismo',pop, fit, filhos, fit_filhos)
+        pop, fit = operator('Elitismo',pop[:,0:2], fit, filhos, fit_filhos)
 
     # Etapa 09: convergencia:
     iwinner = np.argmin(fit)
