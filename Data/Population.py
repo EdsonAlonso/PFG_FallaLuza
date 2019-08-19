@@ -25,7 +25,7 @@ class Fontes:
 
     def Gera( self, minbounds, maxbounds, nfontes = 100 ):
 
-        self.mass = random.uniform( 1e5, 3e6 )
+        self.mass = random.uniform( 1e3, 3e7 )
         self.minbounds = minbounds
         self.maxbounds = maxbounds
         npar = len(self.minbounds) + 1
