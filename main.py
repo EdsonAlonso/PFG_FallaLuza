@@ -22,11 +22,11 @@ if __name__ == "__main__":
     max_bounds = [xmax, ymax]
     npop = 300
     pmut = 0.1
-    ngera = int( 100 )
+    ngera = int( 200 )
     npar = len( min_bounds )
     conv = [ ]
     best = [ ]
-    
+
     model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e8)
     model_gz = model.gz( xobs, zobs )
 
@@ -38,66 +38,64 @@ if __name__ == "__main__":
         fontes.append( pop.asArray( ))
         fit.append( phi( model_gz, pop.Gz( xobs,zobs ) ) )
 
-    pais = operator( 'Roleta',np.array( fit ) )
+    plt.figure()
+    for n in range(ngera):
 
-    pcruz = [ ]
-    for pai in pais:
-        pcruz.append( np.array( fontes[ pai ][ :,0:3 ] ) )
+        # Etapa 03: Selecao dos pais (roleta viciada)
 
-    filhos = operator( 'Cruzamento', pcruz )
+        pais = operator( 'Roleta', np.array( fit ) )
 
-    filhos_mutados = operator( 'Mutacao', filhos, pmut, min_bounds, max_bounds )
+        # Etapa 04: Definicao da subpopulacao para o cruzamento:
+        pcruz = [ ]
+        for pai in pais:
+            pcruz.append(np.array( fontes[ pai ][ :, 0:3 ] ) )
 
-    filhos_novos = pop.Gera_from_Existing( filhos_mutados )
+        # Etapa 05: Cruzamento para criacao dos filhos:
+        filhos = operator( 'Cruzamento', pcruz )
 
-    div = len( filhos_mutados )
-    gz_filhos = [ ]
-    liminf = 0
-    limsup = 0
-    for i in range( int( div ) ):
-        liminf += 300*i
-        limsup += 300
-        gz_temp = 0
-        for index, filho in enumerate(filhos_novos):
-            if liminf <= index < limsup:
-                 gz_temp += filho.gz( xobs, zobs )
+        # Etapa 06: Aplicacao de mutacao em alguns individuos da populacao de filhos:
+        filhos_mutados = operator( 'Mutacao', filhos, pmut, min_bounds, max_bounds )
 
-        gz_filhos.append(  gz_temp )
+        filhos_novos = pop.Gera_from_Existing( filhos_mutados )
 
+
+        div = len( filhos_mutados )
+        gz_filhos = [ ]
         liminf = 0
+        limsup = 0
+        for i in range( int( div ) ):
+            liminf += 300 * i
+            limsup += 300
+            gz_temp = 0
+            for index, filho in enumerate( filhos_novos ):
+                if liminf <= index < limsup:
+                    gz_temp += filho.gz( xobs, zobs )
 
-    fit_filhos = [ ]
-    for k in range( int( div ) ):
-        fit_filhos.append( phi( model_gz, gz_filhos[ k ] ) )
+            gz_filhos.append( gz_temp )
+
+            liminf = 0
+        # Etapa 07: Calculo das aptidoes dos filhos:
+        fit_filhos = [ ]
+
+        for k in range( int( div ) ):
+            fit_filhos.append( phi( model_gz, gz_filhos[ k ] ) )
+
+        # Etapa 08: Elitismo para colocar os filhos na populacao original:
+        fonts, fits = operator( 'Elitismo', fontes, fit, filhos_mutados, fit_filhos )
+        if n%20 == 0:
+            # Etapa 09: convergencia:
+            iwinner = np.argmin( fit )
+            best.append( fontes[ iwinner ][ : ] )
+
+            melhor =  pop.Gera_from_Existing( best )
+
+            gz_melhor = 0
+            for bolinha in melhor:
+                gz_melhor += bolinha.gz(xobs,zobs)
+
+            plt.plot(xobs,model_gz,'r', label = 'Sinal Observado')
+            plt.plot(xobs, gz_melhor, label = 'Sinal Invertido na geração' + str(n) )
+            plt.legend()
+    plt.show()
 
 
-
-    #
-    # for n in range(ngera):
-    #     # Etapa 02: Avaliacao da funcao objetivo:
-    #     fit = alp( fontes[:, 0], fontes[:, 1] )
-    #
-    #     # Etapa 03: Selecao dos pais (roleta viciada)
-    #     pais = operator('Roleta',fit)
-    #
-    #     # Etapa 04: Definicao da subpopulacao para o cruzamento:
-    #     pcruz = np.zeros((len(pais), npar))
-    #     pcruz = fontes[pais, 0:2]
-    #
-    #     # Etapa 05: Cruzamento para criacao dos filhos:
-    #     filhos = operator('Cruzamento',pcruz)
-    #
-    #     # Etapa 06: Aplicacao de mutacao em alguns individuos da populacao de filhos:
-    #     filhos = operator('Mutacao',filhos, pmut, min_bounds, max_bounds)
-    #
-    #     # Etapa 07: Calculo das aptidoes dos filhos:
-    #     fit_filhos = np.zeros(len(filhos))
-    #     fit_filhos = alp(filhos[:, 0], filhos[:, 1])
-    #
-    #     # Etapa 08: Elitismo para colocar os filhos na populacao original:
-    #     fontes, fit = operator('Elitismo',fontes[:,0:2], fit, filhos, fit_filhos)
-    #
-    # # Etapa 09: convergencia:
-    # iwinner = np.argmin(fit)
-    # best.append(fontes[iwinner, :])
-    # print(best)
