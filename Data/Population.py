@@ -7,8 +7,25 @@ class Fontes:
     def __init__( self ):
         self.fontes = [ ]
 
+    @staticmethod
+    def Gera_from_Existing( existing ):
+        """
+
+        :param existing: matrix as [ [x,z,mass] ]
+        :return: population of spheres with the same properties
+        """
+
+        npop = len( existing )
+        fontes = { }
+        for i in range( npop ):
+            for j in range( len( existing[ 0 ]) ):
+                s1 = sphere( existing[ i ][j,0], existing[ i ][j,1], existing[ i ][j,2] )
+                fontes[ s1 ] = s1.params
+        return fontes
+
     def Gera( self, minbounds, maxbounds, nfontes = 100 ):
 
+        self.mass = random.uniform( 1e5, 3e6 )
         self.minbounds = minbounds
         self.maxbounds = maxbounds
         npar = len(self.minbounds) + 1
@@ -19,7 +36,7 @@ class Fontes:
         for i in range( nfontes ):
             x = random.uniform( self.minbounds[ 0 ], self.maxbounds[ 0 ] )
             z = random.uniform( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
-            s1 = sphere(x, z, 1e6)
+            s1 = sphere(x, z, self.mass)
             for j in range( npar ):
                 self.temp[ i,j ] = s1.params[ j ]
             self.fontes[ s1 ] = self.temp[ i ]
