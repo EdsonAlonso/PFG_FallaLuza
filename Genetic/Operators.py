@@ -53,8 +53,8 @@ class _CruzamentoOperator( _OperatorInterface ):
 
         nfilhos = int( npop/2 )
 
-        pais = np.array( self.p[ 0:nfilhos][ : ] )
-        maes = np.array( self.p[ nfilhos:final][ : ] )
+        pais = np.array( self.p[ 0:nfilhos][ :2 ] )
+        maes = np.array( self.p[ nfilhos:final][ :2 ] )
 
         self.filhos = ( pesomae*maes + pesopai*pais )/( pesomae + pesopai )
 
