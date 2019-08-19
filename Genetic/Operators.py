@@ -98,7 +98,7 @@ class _ElitismoOperator( _OperatorInterface ):
 
         df = pd.DataFrame(fitp)
         x = df.sort_values(0, ascending=True)
-        piores = x.index[len(x) - len(filhos):]
+        piores = x.index[ini:]
 
         for index, pos in enumerate(piores):
             self.pop1[pos] = filhos[index]
