@@ -22,17 +22,17 @@ if __name__ == "__main__":
     max_bounds = [xmax, ymax]
     npop = 300
     pmut = 0.1
-    ngera = int( 200 )
+    ngera = int( 300 )
     npar = len( min_bounds )
     conv = [ ]
     best = [ ]
 
-    model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e8)
+    model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e6)
     model_gz = model.gz( xobs, zobs )
 
     fontes = [ ]
     fit = [ ]
-    for j in range(20):
+    for j in range(300):
         pop = Fontes( )
         pop.Gera( min_bounds, max_bounds, nfontes = npop )
         fontes.append( pop.asArray( ))
@@ -54,12 +54,13 @@ if __name__ == "__main__":
         filhos = operator( 'Cruzamento', pcruz )
 
         # Etapa 06: Aplicacao de mutacao em alguns individuos da populacao de filhos:
-        filhos_mutados = operator( 'Mutacao', filhos, pmut, min_bounds, max_bounds )
+        filhos = operator( 'Mutacao', filhos, pmut, min_bounds, max_bounds )
 
-        filhos_novos = pop.Gera_from_Existing( filhos_mutados )
+        pop = Fontes( )
+        filhos_novos = pop.Gera_from_Existing( filhos )
 
 
-        div = len( filhos_mutados )
+        div = len( filhos )
         gz_filhos = [ ]
         liminf = 0
         limsup = 0
@@ -74,6 +75,7 @@ if __name__ == "__main__":
             gz_filhos.append( gz_temp )
 
             liminf = 0
+
         # Etapa 07: Calculo das aptidoes dos filhos:
         fit_filhos = [ ]
 
@@ -81,21 +83,25 @@ if __name__ == "__main__":
             fit_filhos.append( phi( model_gz, gz_filhos[ k ] ) )
 
         # Etapa 08: Elitismo para colocar os filhos na populacao original:
-        fonts, fits = operator( 'Elitismo', fontes, fit, filhos_mutados, fit_filhos )
-        if n%20 == 0:
-            # Etapa 09: convergencia:
-            iwinner = np.argmin( fit )
-            best.append( fontes[ iwinner ][ : ] )
+        fontes, fit = operator( 'Elitismo', fontes, fit, filhos, fit_filhos )
 
-            melhor =  pop.Gera_from_Existing( best )
+    # Etapa 09: convergencia:
+    iwinner = np.argmin( fit )
+    best.append( fontes[ iwinner ][ : ] )
 
-            gz_melhor = 0
-            for bolinha in melhor:
-                gz_melhor += bolinha.gz(xobs,zobs)
+    melhor =  pop.Gera_from_Existing( best )
 
-            plt.plot(xobs,model_gz,'r', label = 'Sinal Observado')
-            plt.plot(xobs, gz_melhor, label = 'Sinal Invertido na geração' + str(n) )
-            plt.legend()
+    print( fontes )
+    print(melhor)
+    gz_melhor = 0
+
+    for bolinha in melhor:
+        gz_melhor += bolinha.gz( xobs, zobs )
+
+
+    plt.plot(xobs,model_gz,'r', label = 'Sinal Observado')
+    plt.plot(xobs, gz_melhor, label = 'Sinal Invertido na geração' + str(n) )
+    plt.legend()
     plt.show()
 
 
