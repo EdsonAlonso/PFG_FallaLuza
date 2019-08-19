@@ -4,6 +4,8 @@ from abc import ABC,abstractmethod
 import pandas as pd
 from modules.auxiliar import sigmoide
 
+def operator( name, *params ):
+    return OperatorFactory( ).getOperator( name ).run( *params )
 
 class _OperatorInterface( ABC ):
     @abstractmethod
@@ -42,8 +44,8 @@ class _CruzamentoOperator( _OperatorInterface ):
         self.p = params[ 0 ]
         final = len( self.p )
 
-        npar = np.size( self.p,1 )
-        npop = np.size( self.p,0 )
+        npar = np.size( self.p[ 0 ],1 )
+        npop = len( self.p )
 
         if npop%2 != 0:
             npop = npop - 1
@@ -51,8 +53,8 @@ class _CruzamentoOperator( _OperatorInterface ):
 
         nfilhos = int( npop/2 )
 
-        pais = self.p[ 0:nfilhos, : ]
-        maes = self.p[ nfilhos:final, : ]
+        pais = np.array( self.p[ 0:nfilhos][ : ] )
+        maes = np.array( self.p[ nfilhos:final][ : ] )
 
         self.filhos = ( pesomae*maes + pesopai*pais )/( pesomae + pesopai )
 
@@ -67,8 +69,8 @@ class _MutacaoOperator( _OperatorInterface ):
         """
         self.p,probmut,minp,maxp = params
 
-        npar = np.size( self.p,1 )
-        npop = np.size( self.p,0 )
+        npar = np.size( self.p[ 0 ],1 ) - 1
+        npop = len( self.p )
 
         for i in range( npop ):
             rand = random.random( )
