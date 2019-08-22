@@ -16,23 +16,23 @@ def phi( x,y ):
 if __name__ == "__main__":
     xobs = np.linspace( 0,10,300 )
     zobs = np.zeros( len( xobs ) )
-    xmin, xmax = 3.0, 6.0
+    xmin, xmax = 2.0, 8.0
     ymin, ymax = 0.5, 10.0
     min_bounds = [xmin, ymin]
     max_bounds = [xmax, ymax]
     npop = 300
     pmut = 0.1
-    ngera = int( 300 )
+    ngera = int( 500 )
     npar = len( min_bounds )
     conv = [ ]
     best = [ ]
 
-    model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e6)
+    model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e8)
     model_gz = model.gz( xobs, zobs )
 
     fontes = [ ]
     fit = [ ]
-    for j in range(300):
+    for j in range(1000):
         pop = Fontes( )
         pop.Gera( min_bounds, max_bounds, nfontes = npop )
         fontes.append( pop.asArray( ))
@@ -91,17 +91,20 @@ if __name__ == "__main__":
 
     melhor =  pop.Gera_from_Existing( best )
 
-    print( fontes )
-    print(melhor)
     gz_melhor = 0
 
     for bolinha in melhor:
         gz_melhor += bolinha.gz( xobs, zobs )
 
 
-    plt.plot(xobs,model_gz,'r', label = 'Sinal Observado')
-    plt.plot(xobs, gz_melhor, label = 'Sinal Invertido na geração' + str(n) )
-    plt.legend()
-    plt.show()
+    plt.subplot( 211 )
+    plt.plot( xobs,model_gz,'r', label = 'Sinal Observado' )
+    plt.plot( xobs, gz_melhor, label = 'Sinal Invertido' )
+    plt.legend( )
+
+    plt.subplot( 212 )
+    plt.scatter( best[ 0 ][ :,0 ],best[ 0 ][ :,1 ] )
+    plt.xlim( min(xobs)-1, max( xobs ) +1)
+    plt.show( )
 
 

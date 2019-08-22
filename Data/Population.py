@@ -25,7 +25,7 @@ class Fontes:
 
     def Gera( self, minbounds, maxbounds, nfontes = 100 ):
 
-        self.mass = random.uniform( 1e3, 3e7 )
+        self.mass = np.random.normal( 100, 1e7 )
         self.minbounds = minbounds
         self.maxbounds = maxbounds
         npar = len(self.minbounds) + 1
@@ -34,8 +34,8 @@ class Fontes:
         self.temp = np.zeros( ( nfontes, npar ) )
 
         for i in range( nfontes ):
-            x = random.uniform( self.minbounds[ 0 ], self.maxbounds[ 0 ] )
-            z = random.uniform( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
+            x = ( 1 - random.random( ) )* self.minbounds[ 0 ] + random.random( )*self.maxbounds[ 0 ]
+            z = ( 1 - random.random( ) ) * self.minbounds[ 1 ] + random.random( ) * self.maxbounds[ 1 ]
             s1 = sphere(x, z, self.mass)
             for j in range( npar ):
                 self.temp[ i,j ] = s1.params[ j ]
