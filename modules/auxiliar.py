@@ -8,6 +8,11 @@
 # -------- Import Python internal libraries ---------
 import math
 import numpy as np
+import random
+
+def sortbetween( min, max ):
+    t = random.random( )
+    return ( 1 - t )*min + t*max
 
 def sigmoide(x):
     a = 1.0
