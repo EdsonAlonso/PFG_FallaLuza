@@ -30,13 +30,11 @@ if __name__ == "__main__":
     model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e8)
     model_gz = model.gz( xobs, zobs )
 
-    fontes = [ ]
     fit = [ ]
-    for j in range(1000):
-        pop = Fontes( )
-        pop.Gera( min_bounds, max_bounds, nfontes = npop )
-        fontes.append( pop.asArray( ))
-        fit.append( phi( model_gz, pop.Gz( xobs,zobs ) ) )
+    pop = Fontes( )
+    pop.Gera( min_bounds, max_bounds, nfontes = npop )
+    fontes = pop.asArray( )
+    fit.append( phi( model_gz, pop.Gz( xobs,zobs ) ) )
 
     plt.figure()
     for n in range(ngera):

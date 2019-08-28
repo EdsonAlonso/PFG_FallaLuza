@@ -23,23 +23,26 @@ class Fontes:
                 fontes[ s1 ] = s1.params
         return fontes
 
-    def Gera( self, minbounds, maxbounds, nfontes = 100 ):
+    def Gera( self, minbounds, maxbounds, nfontes = 100, nind = 500 ):
 
         self.mass = sortbetween( 1e1, 1e8 )
         self.minbounds = minbounds
         self.maxbounds = maxbounds
-        npar = len(self.minbounds) + 1
+        self.nfontes = nfontes
+        self.nind = nind
+        self.npar = len(self.minbounds) + 1
 
         self.fontes = { }
-        self.temp = np.zeros( ( nfontes, npar ) )
+        self.temp = np.zeros( ( self.npar, self.nfontes, self.nind ) )
 
-        for i in range( nfontes ):
-            x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
-            z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
-            s1 = sphere(x, z, self.mass)
-            for j in range( npar ):
-                self.temp[ i,j ] = s1.params[ j ]
-            self.fontes[ s1 ] = self.temp[ i ]
+        for k in range( nind ):
+            for i in range( nfontes ):
+                x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
+                z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
+                s1 = sphere(x, z, self.mass)
+                for j in range( self.npar ):
+                    self.temp[ j,i,k ] = s1.params[ j ]
+                self.fontes[ s1 ] = self.temp[ j ]
 
 
     def Gz( self, xobs, zobs ):
