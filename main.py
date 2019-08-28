@@ -36,6 +36,8 @@ if __name__ == "__main__":
     fontes = pop.asArray( )
     fit.append( phi( model_gz, pop.Gz( xobs,zobs ) ) )
 
+
+
     plt.figure()
     for n in range(ngera):
 

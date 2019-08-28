@@ -25,30 +25,37 @@ class Fontes:
 
     def Gera( self, minbounds, maxbounds, nfontes = 100, nind = 500 ):
 
-        self.mass = sortbetween( 1e1, 1e8 )
         self.minbounds = minbounds
         self.maxbounds = maxbounds
         self.nfontes = nfontes
         self.nind = nind
         self.npar = len(self.minbounds) + 1
 
-        self.fontes = { }
-        self.temp = np.zeros( ( self.npar, self.nfontes, self.nind ) )
+        self.fontes = [ ]
+        self.__fontes__ = { }
+        self.temp = np.zeros( ( self.nfontes, self.npar, self.nind ) )
 
         for k in range( nind ):
+            self.mass = sortbetween(1e1, 1e8)
             for i in range( nfontes ):
                 x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
                 z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
                 s1 = sphere(x, z, self.mass)
                 for j in range( self.npar ):
-                    self.temp[ j,i,k ] = s1.params[ j ]
-                self.fontes[ s1 ] = self.temp[ j ]
-
+                    self.temp[ i,j,k ] = s1.params[ j ]
+                self.__fontes__[ s1 ] = self.temp[ i ]
+            self.fontes.append(  self.__fontes__  )
+            self.__fontes__ = { }
 
     def Gz( self, xobs, zobs ):
-        self.gz = 0
-        for fonte in self.fontes:
-            self.gz += fonte.gz( xobs, zobs )
+        self.gz = np.empty( self.nind )
+        self.__gz__ = 0
+        for i, ind in enumerate( self.fontes ):
+            for esfera in ind:
+                self.__gz__ += esfera.gz( xobs, zobs )
+                print( self.__gz__)
+            self.gz[ i ] = self.__gz__
+            self.__gz__ = 0
 
         return self.gz
 
