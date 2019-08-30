@@ -33,28 +33,27 @@ class Fontes:
 
         self.fontes = [ ]
         self.__fontes__ = { }
-        self.temp = np.zeros( ( self.nfontes, self.npar, self.nind ) )
+        self.temp = np.zeros( ( self.nind, self.nfontes, self.npar ) )
 
         for k in range( nind ):
-            self.mass = sortbetween(1e1, 1e8)
+            self.mass = sortbetween(1e2, 1e7)
             for i in range( nfontes ):
                 x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
                 z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
                 s1 = sphere(x, z, self.mass)
                 for j in range( self.npar ):
-                    self.temp[ i,j,k ] = s1.params[ j ]
-                self.__fontes__[ s1 ] = self.temp[ i ]
+                    self.temp[ k,i,j ] = s1.params[ j ]
+                self.__fontes__[ s1 ] = self.temp[ k ]
             self.fontes.append(  self.__fontes__  )
             self.__fontes__ = { }
 
     def Gz( self, xobs, zobs ):
-        self.gz = np.empty( self.nind )
+        self.gz = [ ]
         self.__gz__ = 0
         for i, ind in enumerate( self.fontes ):
             for esfera in ind:
                 self.__gz__ += esfera.gz( xobs, zobs )
-                print( self.__gz__)
-            self.gz[ i ] = self.__gz__
+            self.gz.append( self.__gz__ )
             self.__gz__ = 0
 
         return self.gz
