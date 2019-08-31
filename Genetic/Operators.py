@@ -2,7 +2,9 @@ import numpy as np
 import random
 from abc import ABC,abstractmethod
 import pandas as pd
-from modules.auxiliar import sigmoide
+from modules.auxiliar import sigmoide, sortbetween
+from Data.Functionals import somadict,dictTimesConstant
+
 
 def operator( name, *params ):
     return OperatorFactory( ).getOperator( name ).run( *params )
@@ -41,10 +43,12 @@ class _CruzamentoOperator( _OperatorInterface ):
         pesopai = random.random( )
         pesomae = random.random( )
 
+        self.filhos = [ ]
+
         self.p = params[ 0 ]
+
         final = len( self.p )
 
-        npar = np.size( self.p[ 0 ],1 )
         npop = len( self.p )
 
         if npop%2 != 0:
@@ -53,35 +57,42 @@ class _CruzamentoOperator( _OperatorInterface ):
 
         nfilhos = int( npop/2 )
 
-        pais = np.array( self.p[ 0:nfilhos][ :2 ] )
-        maes = np.array( self.p[ nfilhos:final][ :2 ] )
-
-        self.filhos = ( pesomae*maes + pesopai*pais )/( pesomae + pesopai )
+        pais =  self.p[ 0:nfilhos ]
+        maes =  self.p[ nfilhos:final ]
+        num = [ ]
+        for i in range( len( pais ) ):
+            pais[ i ] = dictTimesConstant( pais[ i ], pesopai )
+            maes[ i ] = dictTimesConstant( maes[ i ], pesomae )
+            num = somadict( pais[ i ], maes[ i ] )
+            self.filhos.append( num/ (pesopai + pesomae) )
+            num = [ ]
 
         return self.filhos
+
 
 class _MutacaoOperator( _OperatorInterface ):
 
     def run( self, *params ):
         """
-        :param params: (p, probmut, minp, maxp)
+        :param params: (filhos, probmut, minp, maxp)
         :return: p: população mutada
         """
-        self.p,probmut,minp,maxp = params
+        self.pop,probmut,minp,maxp = params
 
-        npar = np.size( self.p[ 0 ],1 ) - 1
-        npop = len( self.p )
+        npar = len( self.pop[ 0 ][ 0 ] )
 
-        for i in range( npop ):
+        nind = len( self.pop )
+
+        for index,ind in enumerate( self.pop ):
             rand = random.random( )
-            if probmut <= rand:
-                ipar = random.randint( 0,npar-1 )
+            if probmut >= rand:
+                ipar = random.randint( 0,npar - 1 )
                 a = minp[ ipar ]
                 b = maxp[ ipar ]
+                for fonte in ind:
+                    fonte[ ipar ] = fonte[ ipar ]*50#random.random( )
 
-                self.p[ i,ipar ] = self.p[ i,ipar ]*random.uniform( a,b )/( b-a )
-
-        return self.p
+        return self.pop
 
 class _ElitismoOperator( _OperatorInterface ):
 
@@ -90,19 +101,20 @@ class _ElitismoOperator( _OperatorInterface ):
         :param params: (pop,fitp,filhos,fitf)
         :return: pop1,fit1
         """
-        p,fitp,filhos,fitf = params
+        pop,fitpop,filhos,fitf = params
 
-        ini = len(p) - len(filhos)
-        self.pop1 = np.copy(p)
-        self.fit1 = np.copy(fitp)
+        ini = len( pop ) - len( filhos )
 
-        df = pd.DataFrame(fitp)
+        self.pop1 = pop[::]
+        self.fit1 = fitpop[::]
+
+        df = pd.DataFrame( fitpop )
         x = df.sort_values(0, ascending=True)
-        piores = x.index[ini:]
+        piores = x.index[ ini: ]
 
         for index, pos in enumerate(piores):
-            self.pop1[pos] = filhos[index]
-            self.fit1[pos] = fitf[index]
+            self.pop1[ pos ] = filhos[ index ]
+            self.fit1[ pos ] = fitf[ index ]
 
         return self.pop1, self.fit1
 
