@@ -23,7 +23,7 @@ class Fontes:
                 fontes[ s1 ] = s1.params
         return fontes
 
-    def Gera( self, minbounds, maxbounds, nfontes = 100, nind = 500 ):
+    def Gera( self, minbounds, maxbounds, massbounds, nfontes = 100, nind = 500 ):
 
         self.minbounds = minbounds
         self.maxbounds = maxbounds
@@ -36,7 +36,7 @@ class Fontes:
         self.temp = np.zeros( ( self.nind, self.nfontes, self.npar ) )
 
         for k in range( nind ):
-            self.mass = sortbetween(1e2, 1e7)
+            self.mass = sortbetween(massbounds[ 0 ], massbounds[ 1 ])
             for i in range( nfontes ):
                 x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
                 z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
@@ -52,7 +52,7 @@ class Fontes:
         self.__gz__ = 0
         for i, ind in enumerate( self.fontes ):
             for esfera in ind:
-                self.__gz__ += esfera.gz( xobs, zobs )
+                self.__gz__ += esfera.Gz( xobs, zobs )
             self.gz.append( self.__gz__ )
             self.__gz__ = 0
 
