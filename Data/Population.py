@@ -15,28 +15,33 @@ class Fontes:
         :return: population of spheres with the same properties
         """
 
-        npop = len( existing )
-        fontes = { }
-        for i in range( npop ):
-            for j in range( len( existing[ 0 ]) ):
-                s1 = sphere( existing[ i ][j,0], existing[ i ][j,1], existing[ i ][j,2] )
-                fontes[ s1 ] = s1.params
+        nind = len( existing )
+        nfontes = len( existing[ 0 ] )
+        temp = { }
+        fontes = [ ]
+        for i in range( nind ):
+            for k in range( nfontes ):
+                s1 = sphere( existing[ i ][ k,0 ], existing[ i ][ k,1 ], existing[ i ][ k,2 ] )
+                temp[ s1 ] = np.array( s1.params )
+            fontes.append( temp )
+            temp = { }
         return fontes
 
-    def Gera( self, minbounds, maxbounds, massbounds, nfontes = 100, nind = 500 ):
+
+    def Gera( self, minbounds, maxbounds, nfontes = 100, nind = 500 ):
 
         self.minbounds = minbounds
         self.maxbounds = maxbounds
         self.nfontes = nfontes
         self.nind = nind
-        self.npar = len(self.minbounds) + 1
+        self.npar = len(self.minbounds)
 
         self.fontes = [ ]
         self.__fontes__ = { }
         self.temp = np.zeros( ( self.nind, self.nfontes, self.npar ) )
 
         for k in range( nind ):
-            self.mass = sortbetween(massbounds[ 0 ], massbounds[ 1 ])
+            self.mass = sortbetween(self.minbounds[ 2 ], self.maxbounds[ 2 ])
             for i in range( nfontes ):
                 x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
                 z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
@@ -47,10 +52,15 @@ class Fontes:
             self.fontes.append(  self.__fontes__  )
             self.__fontes__ = { }
 
-    def Gz( self, xobs, zobs ):
+
+    def Gz( self, xobs, zobs, fontes = None):
+
+        if fontes == None:
+            fontes = self.fontes
+
         self.gz = [ ]
         self.__gz__ = 0
-        for i, ind in enumerate( self.fontes ):
+        for i, ind in enumerate( fontes ):
             for esfera in ind:
                 self.__gz__ += esfera.Gz( xobs, zobs )
             self.gz.append( self.__gz__ )
