@@ -2,12 +2,13 @@ import numpy as np
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 
+
 class _BaseModel_( ABC ):
 
     _gravConst = 6.674e-11
 
     @abstractmethod
-    def gz( self ):
+    def Gz( self ):
         pass
 
     @abstractmethod
@@ -26,7 +27,7 @@ class sphere( _BaseModel_ ):
         self.mass = mass
         self.params = [ self.x, self.z, self.mass ]
 
-    def gz( self, x_obs, z_obs ):
+    def Gz( self, x_obs, z_obs ):
         self.__xobs__ = x_obs
         self.__zobs__ = z_obs
         num = ( self.mass*( self.__zobs__ - self.z ) )
@@ -59,7 +60,7 @@ class rect( _BaseModel_ ):
         self.horizontal_length = horizontal_length
         self.rho = rho
 
-    def gz( self , xobs, yobs ):
+    def Gz( self , xobs, yobs ):
         self.__xobs__ = xobs
         self.__yobs__ = yobs
         gz1 = ( _BaseModel_._gravConst*self.rho*self.horizontal_length )
@@ -67,18 +68,25 @@ class rect( _BaseModel_ ):
         gz2 = ( 1/den1 )
         den2 = ( np.sqrt( ( self.__xobs__ - self.x )**2 + ( self.__yobs__ - self.vertical_length )**2 ) )
         gz3 = ( 1/den2 )
-        self.__gz__ = gz1*( gz2 - gz3 )
+        self.gz = gz1*( gz2 - gz3 )
 
-        return self.__gz__
+        return self.gz
 
     def plotGz( self ):
         plt.figure( figsize = ( 10,10 ), facecolor='w' )
-        plt.plot( self.__xobs__,self.__gz__ )
+        plt.plot( self.__xobs__,self.gz )
         plt.grid( )
         plt.show( )
 
     def plotModel( self ):
         pass
+
+    def addnoise( self ):
+        noise = np.random.normal( 0, 0.0002, len( self.gz ) )
+
+        self.gz_noised = self.gz + noise
+
+        return self.gz_noised
 
 class semiFiniteSheet( _BaseModel_ ):
 
@@ -88,7 +96,7 @@ class semiFiniteSheet( _BaseModel_ ):
         self.rho = rho
         self.thickness = thickness
 
-    def gz( self, xobs, yobs ):
+    def Gz( self, xobs, yobs ):
         self.__xobs__ = xobs
         self.__yobs__ = yobs
 
