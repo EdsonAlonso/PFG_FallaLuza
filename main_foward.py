@@ -24,8 +24,6 @@ if __name__ == "__main__":
     pmut = 0.1
     ngera = int( 500 )
     npar = len( min_bounds )
-    conv = [ ]
-    best = [ ]
 
     model = rect( 4.5, 3.0, 5.0 , 4.0 , 3e8)
     model_gz = model.Gz( xobs, zobs )
