@@ -16,7 +16,7 @@ def phi( x,y ):
 if __name__ == "__main__":
     xobs = np.linspace( 0,10,300 )
     zobs = np.zeros( len( xobs ) )
-    xmin, xmax = 2.0, 3.0
+    xmin, xmax = 2.0, 8.0
     ymin, ymax = 0.5, 10.0
     min_bounds = [xmin, ymin]
     max_bounds = [xmax, ymax]
@@ -41,12 +41,17 @@ if __name__ == "__main__":
         plt.title(f'Individuo {index}')
         plt.subplot(211)
         plt.plot(xobs, gz[index])
+        plt.grid( )
+
         plt.subplot(212)
         for fonte in ind:
             plt.scatter( fonte.params[0], fonte.params[1], c = 'black' )
         plt.xlim(min(xobs), max(xobs) )
         plt.gca().invert_yaxis()
+        plt.grid( )
+        #plt.savefig('Imagegm'+str(index)+'.png')
     plt.show( )
+
     #
     # plt.figure()
     # for n in range(ngera):

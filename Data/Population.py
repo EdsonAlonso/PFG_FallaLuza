@@ -43,7 +43,7 @@ class Fontes:
                 s1 = sphere(x, z, self.mass)
                 for j in range( self.npar ):
                     self.temp[ k,i,j ] = s1.params[ j ]
-                self.__fontes__[ s1 ] = self.temp[ k ]
+                self.__fontes__[ s1 ] = self.temp[ k ][ i ]
             self.fontes.append(  self.__fontes__  )
             self.__fontes__ = { }
 
