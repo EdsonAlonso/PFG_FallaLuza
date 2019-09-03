@@ -22,7 +22,8 @@ class _RoletaOperator( _OperatorInterface ):
         :param params: array contendo a função de ajuste aplicada à população
         :return: pai: array contendo os candidatos a pais
         """
-        prob = sigmoide( params[ 0 ] )
+        fit = params[ 0 ][ : ]
+        prob = sigmoide( fit )
         self.pai = [ ]
 
         for i in range( len( prob ) ):
@@ -45,7 +46,7 @@ class _CruzamentoOperator( _OperatorInterface ):
 
         self.filhos = [ ]
 
-        self.p = params[ 0 ]
+        self.p = np.copy( params[ 0 ] )
 
         final = len( self.p )
 
@@ -77,22 +78,25 @@ class _MutacaoOperator( _OperatorInterface ):
         :param params: (filhos, probmut, minp, maxp)
         :return: p: população mutada
         """
-        self.pop,probmut,minp,maxp = params
+        pop,probmut,minp,maxp = params
 
-        npar = len( self.pop[ 0 ][ 0 ] )
+        npar = len( pop[ 0 ][ 0 ] )
 
-        nind = len( self.pop )
+        nind = len( pop )
 
-        for index,ind in enumerate( self.pop ):
+        self.temp = np.copy( pop )
+
+        for index,ind in enumerate( self.temp ):
             rand = random.random( )
-            if probmut >= rand:
-                ipar = random.randint( 0,npar - 1 )
+            if probmut > rand:
+                ipar = random.randint(0, npar - 1)
                 a = minp[ ipar ]
                 b = maxp[ ipar ]
+                factor = ( sortbetween( a, b )/( b - a ) )
                 for fonte in ind:
-                    fonte[ ipar ] = fonte[ ipar ]*50#random.random( )
+                    fonte[ ipar ] = fonte[ ipar ]*factor
 
-        return self.pop
+        return self.temp
 
 class _ElitismoOperator( _OperatorInterface ):
 
@@ -105,18 +109,17 @@ class _ElitismoOperator( _OperatorInterface ):
 
         ini = len( pop ) - len( filhos )
 
-        self.pop1 = pop[::]
-        self.fit1 = fitpop[::]
-
         df = pd.DataFrame( fitpop )
         x = df.sort_values(0, ascending=True)
         piores = x.index[ ini: ]
 
+        self.pop = pop[ : ]
+        self.fitpop = fitpop[ : ]
         for index, pos in enumerate(piores):
-            self.pop1[ pos ] = filhos[ index ]
-            self.fit1[ pos ] = fitf[ index ]
+            self.pop[ pos ] = filhos[ index ]
+            self.fitpop[ pos ] = fitf[ index ]
 
-        return self.pop1, self.fit1
+        return self.pop, self.fitpop
 
 
 
