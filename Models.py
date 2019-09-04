@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class _BaseModel_( ABC ):
 
-    _gravConst = 6.674e-11
+    _gravConst = 6.674e-2
 
     @abstractmethod
     def Gz( self ):
@@ -30,8 +30,8 @@ class sphere( _BaseModel_ ):
     def Gz( self, x_obs, z_obs ):
         self.__xobs__ = x_obs
         self.__zobs__ = z_obs
-        num = ( self.mass*( self.__zobs__ - self.z ) )
-        den = ( ( self.__xobs__ - self.x )**2 + ( self.__zobs__ - self.z)**2 )
+        num = ( self.mass*( self.__zobs__ - self.z ) ) # MASSA * (Zobs - Z)
+        den = ( ( self.__xobs__ - self.x )**2 + ( self.__zobs__ - self.z)**2 )**(3/2) # (Xobs-X)**2 + (Zobs- Z)**2
         self.__gz__ =  -( _BaseModel_._gravConst*( num/den ) )
         return self.__gz__
 
@@ -42,7 +42,7 @@ class sphere( _BaseModel_ ):
         plt.show( )
 
     def plotModel( self ):
-        plt.figure( figsize=(10,10), facecolor='w' )
+        p1 = plt.figure( figsize=(10,10), facecolor='w' )
         plt.scatter( self.x, self.z, s = 50, c = 'b' )
         plt.xlim( min( self.__xobs__), max( self.__xobs__ ) )
         plt.ylim( -0.5, self.z + 5.0 )
@@ -50,27 +50,51 @@ class sphere( _BaseModel_ ):
         plt.grid( )
         plt.show( )
 
-
 class rect( _BaseModel_ ):
 
-    def __init__( self, x, z, vertical_length, horizontal_length, rho ):
-        self.x = x
-        self.z = z
-        self.vertical_length = vertical_length
-        self.horizontal_length = horizontal_length
+    def __init__( self, x1, x2, z1, z2, rho ):
+        self.x1 = x1
+        self.x2 = x2
+        self.z1 = z1
+        self.z2 = z2
         self.rho = rho
+        self.params = [ self.x1, self.x2, self.z1, self.z2, self.rho ]
+
+    def theta( self, x, z ):
+        return np.arctan( z/x )
 
     def Gz( self , xobs, yobs ):
         self.__xobs__ = xobs
         self.__yobs__ = yobs
-        gz1 = ( _BaseModel_._gravConst*self.rho*self.horizontal_length )
-        den1 = ( np.sqrt( ( self.__xobs__ - self.x )**2 + ( self.__yobs__ - self.z )**2 ) )
-        gz2 = ( 1/den1 )
-        den2 = ( np.sqrt( ( self.__xobs__ - self.x )**2 + ( self.__yobs__ - self.vertical_length )**2 ) )
-        gz3 = ( 1/den2 )
-        self.gz = gz1*( gz2 - gz3 )
 
-        return self.gz
+        dx1 = self.x1 - self.__xobs__
+        dx2 = self.x2 - self.__xobs__
+        dz1 = self.z1 - self.__yobs__
+        dz2 = self.z2 - self.__yobs__
+
+        gz0 = ( 2*_BaseModel_._gravConst*self.rho )
+
+        theta4 = ( self.theta( dz2, dx1 ) )
+        theta3 = ( self.theta( dz2, dx2 ) )
+        gz1 = ( dz2 )*( theta4 - theta3 )
+
+        theta2 = ( self.theta( dz1, dx2 ) )
+        theta1 = ( self.theta( dz1, dx1 ) )
+        gz2 = ( dz1 )*( theta2 - theta1 )
+
+        ln1num = ( ( dx1 )**2 + ( dz2 )**2 )
+        ln1den = ( ( dx1 )**2 + ( dz1 )**2 )
+
+        gz3 = ( dx1 )*( np.log( ln1num/ln1den ) )
+
+        ln2num = ( ( dx2 )**2 + ( dz1 )**2 )
+        ln2den = ( ( dx2 )**2 + ( dz2 )**2 )
+
+        gz4 = ( dx2 )*( np.log( ln2num/ln2den ) )
+
+        self.gz = gz0*( gz1 + gz2 - 0.5*( gz3 + gz4 ) )
+
+        return self.gz + abs( min( self.gz ) )
 
     def plotGz( self ):
         plt.figure( figsize = ( 10,10 ), facecolor='w' )
@@ -82,7 +106,7 @@ class rect( _BaseModel_ ):
         pass
 
     def addnoise( self ):
-        noise = np.random.normal( 0, 0.0002, len( self.gz ) )
+        noise = np.random.normal( 0, 0.0001, len( self.gz ) )
 
         self.gz_noised = self.gz + noise
 
