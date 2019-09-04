@@ -3,8 +3,11 @@ import numpy as np
 def phi( gzmodel, gzcalc ):
     res = [ ]
     for gz in gzcalc:
-        res.append( ( np.linalg.norm( gzmodel - gz ) )**2 )
-
+        soma = 0
+        for i in range( len( gz ) ):
+            soma += ( gzmodel[ i ] - gz[ i ] )**2
+        res.append( soma )
+        soma = 0
     return  res
 
 def somadict( dict1, dict2 ):
