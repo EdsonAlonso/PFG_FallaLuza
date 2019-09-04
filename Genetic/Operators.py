@@ -2,7 +2,7 @@ import numpy as np
 import random
 from abc import ABC,abstractmethod
 import pandas as pd
-from modules.auxiliar import sigmoide, sortbetween
+from modules.auxiliar import softmax, sortbetween, normalize
 from Data.Functionals import somadict,dictTimesConstant
 
 
@@ -23,9 +23,8 @@ class _RoletaOperator( _OperatorInterface ):
         :return: pai: array contendo os candidatos a pais
         """
         fit = params[ 0 ][ : ]
-        prob = sigmoide( fit )
+        prob = normalize( fit )
         self.pai = [ ]
-
         for i in range( len( prob ) ):
             r = random.random( )
             if prob[ i ] >= r:
@@ -79,8 +78,7 @@ class _MutacaoOperator( _OperatorInterface ):
         :return: p: população mutada
         """
         pop,probmut,minp,maxp = params
-
-        npar = len( pop[ 0 ][ 0 ] )
+        npar = 3#len( pop[ 0 ][ 0 ] )
 
         nind = len( pop )
 
