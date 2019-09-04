@@ -16,8 +16,24 @@ def sortbetween( min, max ):
 
 def sigmoide(x):
     a = 1.0
-    sig = 1.0 - (1.0 / (1.0 + np.exp(-a * x)))
+    sig = 1.0 - ( 1.0 / ( 1.0 + np.exp( -a * x ) ) )
     return sig
+
+def softmax( x ):
+    soft = np.zeros( len( x ) )
+    x_exp = np.zeros( len( x ) )
+    for index,xi in enumerate( x ):
+        x_exp[ index ] = 2.71**( xi )
+    sum_x_exp = np.sum( x_exp )
+    for i in range( len( x ) ):
+        soft[ i ] = 1 - ( x_exp[ i ]/ sum_x_exp )
+    return soft
+
+def normalize( x ):
+    a = max( x )
+    b = min( x )
+
+    return 1 - ( ( x - a )/( b - a ) )
 
 def sec(angle):
     '''function that computes the secant of a specific angle in radians
