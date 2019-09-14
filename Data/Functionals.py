@@ -6,7 +6,7 @@ def phi( gzmodel, gzcalc ):
         soma = 0
         for i in range( len( gz ) ):
             soma += ( gzmodel[ i ] - gz[ i ] )**2
-        res.append( soma )
+        res.append( np.sqrt( soma ) )
         soma = 0
     return  res
 

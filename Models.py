@@ -1,11 +1,13 @@
 import numpy as np
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
+from modules.auxiliar import my_atan, my_log
 
 
 class _BaseModel_( ABC ):
 
-    _gravConst = 6.674e-2
+    _gravConst = 6.674e-11
+    _si2mGal = 100000.0
 
     @abstractmethod
     def Gz( self ):
@@ -32,8 +34,9 @@ class sphere( _BaseModel_ ):
         self.__zobs__ = z_obs
         num = ( self.mass*( self.__zobs__ - self.z ) ) # MASSA * (Zobs - Z)
         den = ( ( self.__xobs__ - self.x )**2 + ( self.__zobs__ - self.z)**2 )**(3/2) # (Xobs-X)**2 + (Zobs- Z)**2
-        self.__gz__ =  -( _BaseModel_._gravConst*( num/den ) )
-        return self.__gz__
+        self.gz =  -( _BaseModel_._gravConst*( num/den ) )
+
+        return self.gz*_BaseModel_._si2mGal
 
     def plotGz( self ):
         plt.figure( figsize = ( 10,10 ), facecolor='w' )
@@ -57,44 +60,33 @@ class rect( _BaseModel_ ):
         self.x2 = x2
         self.z1 = z1
         self.z2 = z2
-        self.rho = rho
+        self.rho = rho*1000.
         self.params = [ self.x1, self.x2, self.z1, self.z2, self.rho ]
 
-    def theta( self, x, z ):
-        return np.arctan( z/x )
 
-    def Gz( self , xobs, yobs ):
+    def Gz( self , xobs, zobs ):
         self.__xobs__ = xobs
-        self.__yobs__ = yobs
+        self.__zobs__ = zobs
+        yobs = self.__xobs__*0
 
-        dx1 = self.x1 - self.__xobs__
-        dx2 = self.x2 - self.__xobs__
-        dz1 = self.z1 - self.__yobs__
-        dz2 = self.z2 - self.__yobs__
+        dx = [ self.x2 - self.__xobs__, self.x1 - self.__xobs__ ]
+        dy = [  600 - yobs , -600 - yobs ]
+        dz = [ self.z2 - self.__zobs__, self.z1 - self.__zobs__ ]
 
-        gz0 = ( 2*_BaseModel_._gravConst*self.rho )
+        self.gz = np.zeros_like( xobs )
 
-        theta4 = ( self.theta( dz2, dx1 ) )
-        theta3 = ( self.theta( dz2, dx2 ) )
-        gz1 = ( dz2 )*( theta4 - theta3 )
+        for k in range( 2 ):
+            for j in range( 2 ):
+                for i in range( 2 ):
+                    r = np.sqrt( dx[ i ]**2 + dy[ j ]**2 + dz[ k ]**2 )
+                    result = -( dx[ i ]*my_log( dy[ j ] + r )\
+                                + dy[ j ]*my_log( dx[ i ] + r )\
+                                - dz[ k ]*my_atan( dx[ i ]*dy[ j ], dz[ k ]*r ) )
+                    self.gz += ( (-1)**( i+j+k ) )*result*self.rho
 
-        theta2 = ( self.theta( dz1, dx2 ) )
-        theta1 = ( self.theta( dz1, dx1 ) )
-        gz2 = ( dz1 )*( theta2 - theta1 )
+        self.gz *= _BaseModel_._gravConst*_BaseModel_._si2mGal
 
-        ln1num = ( ( dx1 )**2 + ( dz2 )**2 )
-        ln1den = ( ( dx1 )**2 + ( dz1 )**2 )
-
-        gz3 = ( dx1 )*( np.log( ln1num/ln1den ) )
-
-        ln2num = ( ( dx2 )**2 + ( dz1 )**2 )
-        ln2den = ( ( dx2 )**2 + ( dz2 )**2 )
-
-        gz4 = ( dx2 )*( np.log( ln2num/ln2den ) )
-
-        self.gz = gz0*( gz1 + gz2 - 0.5*( gz3 + gz4 ) )
-
-        return self.gz + abs( min( self.gz ) )
+        return self.gz
 
     def plotGz( self ):
         plt.figure( figsize = ( 10,10 ), facecolor='w' )
@@ -106,11 +98,12 @@ class rect( _BaseModel_ ):
         pass
 
     def addnoise( self ):
-        noise = np.random.normal( 0, 0.0001, len( self.gz ) )
+        noise = np.random.normal( 0, 0.05, len( self.gz ) )
 
-        self.gz_noised = self.gz + noise
+        self.gz = self.gz + noise
 
-        return self.gz_noised
+        return  self.gz
+
 
 class semiFiniteSheet( _BaseModel_ ):
 

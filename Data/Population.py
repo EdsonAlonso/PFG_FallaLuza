@@ -40,9 +40,9 @@ class Fontes:
         self.__fontes__ = { }
         self.temp = np.zeros( ( self.nind, self.nfontes, self.npar ) )
 
-        for k in range( nind ):
+        for k in range( self.nind ):
             self.mass = sortbetween(self.minbounds[ 2 ], self.maxbounds[ 2 ])
-            for i in range( nfontes ):
+            for i in range( self.nfontes ):
                 x = sortbetween( self.minbounds[ 0 ] , self.maxbounds[ 0 ] )
                 z = sortbetween( self.minbounds[ 1 ], self.maxbounds[ 1 ] )
                 s1 = sphere(x, z, self.mass)

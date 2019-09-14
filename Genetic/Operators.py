@@ -2,8 +2,9 @@ import numpy as np
 import random
 from abc import ABC,abstractmethod
 import pandas as pd
-from modules.auxiliar import softmax, sortbetween, normalize
+from modules.auxiliar import sortbetween, normalize
 from Data.Functionals import somadict,dictTimesConstant
+from scipy.special import softmax
 
 
 def operator( name, *params ):
@@ -23,7 +24,7 @@ class _RoletaOperator( _OperatorInterface ):
         :return: pai: array contendo os candidatos a pais
         """
         fit = params[ 0 ][ : ]
-        prob = normalize( fit )
+        prob = softmax( fit )
         self.pai = [ ]
         for i in range( len( prob ) ):
             r = random.random( )

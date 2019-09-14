@@ -10,6 +10,29 @@ import math
 import numpy as np
 import random
 
+
+def my_atan(x, y):
+    '''
+    Return the more stable output for arctan calculation by correcting the
+    value of the angle in arctan2, in order to fix the sign of the tangent.
+    '''
+    arctan = np.arctan2(x, y)
+    arctan[x == 0] = 0
+    arctan[(x > 0) & (y < 0)] -= np.pi
+    arctan[(x < 0) & (y < 0)] += np.pi
+    return arctan
+
+
+def my_log(x):
+    '''
+    Return the value 0 for log(0), once the limits applying in the formula
+    tend to 0.
+    '''
+
+    log = np.log(x)
+    log[x == 0] = 0
+    return log
+
 def sortbetween( min, max ):
     t = random.random( )
     return ( 1 - t )*min + t*max
@@ -18,16 +41,6 @@ def sigmoide(x):
     a = 1.0
     sig = 1.0 - ( 1.0 / ( 1.0 + np.exp( -a * x ) ) )
     return sig
-
-def softmax( x ):
-    soft = np.zeros( len( x ) )
-    x_exp = np.zeros( len( x ) )
-    for index,xi in enumerate( x ):
-        x_exp[ index ] = 2.71**( xi )
-    sum_x_exp = np.sum( x_exp )
-    for i in range( len( x ) ):
-        soft[ i ] = 1 - ( x_exp[ i ]/ sum_x_exp )
-    return soft
 
 def normalize( x ):
     a = max( x )

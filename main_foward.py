@@ -1,9 +1,6 @@
-from Genetic.Operators import operator
 import numpy as np
-from Data.Population import Fontes
-import matplotlib.pyplot as plt
-from Models import rect, sphere
-from modules.auxiliar import sigmoide, softmax
+from Models import rect
+from Plots import plotRect
 
 def alp(x, y):
     fun = -(x * y) ** (0.5) * np.sin(x) * np.sin(y)
@@ -14,7 +11,7 @@ def phi( x,y ):
 
 
 if __name__ == "__main__":
-    xobs = np.linspace( -10,10,300 )
+    xobs = np.linspace( -1000,1000,300 )
     zobs = np.zeros( len( xobs ) )
     xmin, xmax = -0.5, 0.5
     ymin, ymax =  2.0, 6.0
@@ -25,37 +22,7 @@ if __name__ == "__main__":
     ngera = int( 500 )
     npar = len( min_bounds )
 
-    model = rect( -0.5,0.5,2.0,6.0,5e5 )
+    model = rect( -100,100,200,800,2 )
     model_gz = model.Gz( xobs, zobs )
-    model_gz_noised = model.addnoise( )
 
-    massbounds = [ 1e4,1e7 ]
-    pop = Fontes( )
-    pop.Gera( min_bounds, max_bounds, nfontes = npop , nind = 1)
-    fontes = pop.asArray( )
-    gz = pop.Gz( xobs, zobs )
-
-
-    plt.figure()
-    plt.subplot(211)
-    plt.plot(xobs, model_gz, label = str( ( phi( model_gz, gz ) ) ) )
-    plt.plot( xobs, gz[0])
-    plt.grid( )
-    plt.xlim(-10,10)
-    plt.legend( )
-
-    plt.subplot(212)
-    plt.plot( [ model.params[ 0 ], model.params[ 0 ], model.params[ 1 ], model.params[ 1 ], model.params[ 0 ] ],\
-              [ model.params[ 2 ],model.params[ 3 ], model.params[ 3 ], model.params[ 2 ],model.params[ 2 ] ],".-" )
-    for key in pop.fontes[ 0 ]:
-        plt.scatter( key.params[ 0 ], key.params[ 1 ] )
-    plt.grid( )
-    plt.ylim( 0,10 )
-    plt.gca( ).invert_yaxis( )
-    plt.xlim( -10,10 )
-    # plt.show( )
-
-    plt.figure()
-    plt.plot(xobs, softmax(xobs))
-    plt.show()
-
+    plotRect(model, model_gz, xobs, [0,1000], fill = False)
