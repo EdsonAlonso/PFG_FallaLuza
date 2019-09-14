@@ -4,8 +4,6 @@ from abc import ABC,abstractmethod
 import pandas as pd
 from modules.auxiliar import sortbetween, normalize
 from Data.Functionals import somadict,dictTimesConstant
-from scipy.special import softmax
-
 
 def operator( name, *params ):
     return OperatorFactory( ).getOperator( name ).run( *params )
@@ -24,7 +22,7 @@ class _RoletaOperator( _OperatorInterface ):
         :return: pai: array contendo os candidatos a pais
         """
         fit = params[ 0 ][ : ]
-        prob = softmax( fit )
+        prob = normalize( fit )
         self.pai = [ ]
         for i in range( len( prob ) ):
             r = random.random( )
@@ -46,7 +44,7 @@ class _CruzamentoOperator( _OperatorInterface ):
 
         self.filhos = [ ]
 
-        self.p = np.copy( params[ 0 ] )
+        self.p = params[ 0 ][ : ]
 
         final = len( self.p )
 
@@ -58,15 +56,14 @@ class _CruzamentoOperator( _OperatorInterface ):
 
         nfilhos = int( npop/2 )
 
-        pais =  self.p[ 0:nfilhos ]
-        maes =  self.p[ nfilhos:final ]
-        num = [ ]
-        for i in range( len( pais ) ):
-            pais[ i ] = dictTimesConstant( pais[ i ], pesopai )
-            maes[ i ] = dictTimesConstant( maes[ i ], pesomae )
-            num = somadict( pais[ i ], maes[ i ] )
-            self.filhos.append( num/ (pesopai + pesomae) )
-            num = [ ]
+        __pais =  self.p[ 0:nfilhos ]
+        __maes =  self.p[ nfilhos:final ]
+        num = 0
+        den = pesomae + pesopai
+        for i in range( len( __pais ) ):
+            num = ( pesopai*__pais[ i ] + pesomae*__maes[ i ] )
+            self.filhos.append( num / den )
+            num = 0
 
         return self.filhos
 
@@ -79,11 +76,11 @@ class _MutacaoOperator( _OperatorInterface ):
         :return: p: população mutada
         """
         pop,probmut,minp,maxp = params
-        npar = 3#len( pop[ 0 ][ 0 ] )
+        npar = len( pop[ 0 ][ 0 ] )
 
         nind = len( pop )
 
-        self.temp = np.copy( pop )
+        self.temp = pop[ : ]
 
         for index,ind in enumerate( self.temp ):
             rand = random.random( )
