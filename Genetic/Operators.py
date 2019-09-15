@@ -28,6 +28,16 @@ class _RoletaOperator( _OperatorInterface ):
             r = random.random( )
             if prob[ i ] >= r:
                 self.pai.append( i )
+        if len( self.pai ) == 1:
+            if 0 in self.pai and 1 not in self.pai:
+                self.pai.append( 1 )
+            elif 1 in self.pai and 0 not in self.pai:
+                self.pai.append( 0 )
+            else:
+                self.pai.append( 0 )
+        elif len( self.pai ) == 0:
+            self.pai.append( random.randint( 0, 500 ) )
+            self.pai.append( random.randint( 0, 500 ) )
 
         return np.array( self.pai )
 

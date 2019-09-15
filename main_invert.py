@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 #Etapa 00: Definições Iniciais:
 
-xobs = np.linspace(-1000, 1000, 300)
+xobs = np.linspace(-1000, 1000, 500)
 zobs = np.zeros(len(xobs))
 model = rect( -100,100,200,800,2 )
 model_gz = model.Gz(xobs, zobs)
@@ -16,9 +16,9 @@ ymin, ymax = 200, 800.0
 min_bounds = [xmin, ymin, 1e6]
 max_bounds = [xmax, ymax, 1e10]
 nfontes = 20
-nind = 300
+nind = 500
 pmut = 0.1
-ngera = 100
+ngera = 50000
 
 
 #Etapa 01: Inicialização da População:
@@ -37,8 +37,11 @@ best =  fontes[ iwinner ]
 plt.figure( )
 
 plt.subplot(211)
-plt.plot( xobs, gz_fonts )
+plt.plot( xobs, gz_fonts[0] ,label = 'Gz invertido antes do Algoritmo Genético')
+plt.plot( xobs, model_gz , label = 'Gz Observado')
+plt.legend( )
 
+plt.xlim(-1000,1000)
 plt.subplot(212)
 plt.scatter( best[:,0], best[:,1] )
 plt.xlim( -1000, 1000)
@@ -61,7 +64,6 @@ for i in range( ngera ):
         popcruz.append( fontes[ pai ] )
 
 
-
     # Etapa 05: Cruzamento para criacao dos filhos:
     filhos = operator( 'Cruzamento', popcruz )
 
@@ -79,7 +81,7 @@ for i in range( ngera ):
 
     # Etapa 08: Elitismo para colocar os filhos na populacao original:
     fontes, fit = operator( 'Elitismo', fontes, fit, filhos, fit_filhos )
-    print( fit )
+    print( fit[np.argmin( fit ) ] )
 
 # Etapa 09: convergencia:
 
@@ -87,6 +89,7 @@ iwinner = np.argmin( fit )
 best =  fontes[ iwinner ]
 
 b = pop.Gera_from_Existing([best])
+print( best )
 gz_best = 0
 for b in b:
     for i in b:
@@ -94,10 +97,15 @@ for b in b:
 
 plt.figure( )
 plt.subplot( 211)
-plt.plot( model_gz )
-plt.plot( xobs, gz_best )
+plt.plot( xobs, model_gz ,label = 'Gz Observado')
+plt.plot( xobs, gz_best , label = 'Gz Invertido depois do Algoritmo Genético')
+plt.legend( )
+
+plt.xlim(-1000,1000)
 plt.subplot(212)
 plt.scatter( best[:,0], best[:,1] )
+plt.plot([model.params[0], model.params[0], model.params[1], model.params[1], model.params[0]], \
+             [model.params[2], model.params[3], model.params[3], model.params[2], model.params[2]], ".-")
 plt.xlim( -1000, 1000)
 plt.ylim(0,1000)
 plt.gca().invert_yaxis()
