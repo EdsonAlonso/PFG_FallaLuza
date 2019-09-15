@@ -110,8 +110,9 @@ class semiFiniteSheet( _BaseModel_ ):
     def __init__( self, x, z, rho, thickness ):
         self.x = x
         self.z = z
-        self.rho = rho
+        self.rho = rho*1000.
         self.thickness = thickness
+        self.params = [ self.x, self.z, self.rho, self.thickness ]
 
     def Gz( self, xobs, yobs ):
         self.__xobs__ = xobs
@@ -121,15 +122,22 @@ class semiFiniteSheet( _BaseModel_ ):
         gz2 = ( np.pi/2 )
         gz3 = ( np.arctan( ( self.__xobs__ - self.x )/( self.__yobs__ - self.z ) ) )
 
-        self.__gz__ = gz1*( gz2 - gz3 )
+        self.gz = gz1*( gz2 - gz3 )
 
-        return self.__gz__
+        return self.gz*_BaseModel_._si2mGal
 
     def plotGz( self ):
         plt.figure( figsize = ( 10,10 ), facecolor='w' )
-        plt.plot( self.__xobs__,self.__gz__ )
+        plt.plot( self.__xobs__,self.gz)
         plt.grid( )
         plt.show( )
 
     def plotModel( self ):
         pass
+
+    def addnoise( self ):
+        noise = np.random.normal( 0, 0.05, len( self.gz ) )
+
+        self.gz = self.gz + noise
+
+        return  self.gz

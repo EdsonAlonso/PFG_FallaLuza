@@ -98,9 +98,15 @@ class _MutacaoOperator( _OperatorInterface ):
                 ipar = random.randint(0, npar - 1)
                 a = minp[ ipar ]
                 b = maxp[ ipar ]
-                factor = ( sortbetween( a, b )/( b - a ) )
-                for fonte in ind:
-                    fonte[ ipar ] = fonte[ ipar ]*factor
+                if ipar != 2:
+                    for fonte in ind:
+                        factor = (sortbetween(a, b) / (b - a))
+                        fonte[ ipar ] = fonte[ ipar ]*factor
+                elif ipar == 2:
+                    factor = (sortbetween(a, b) / (b - a))
+                    for fonte in ind:
+                        fonte[ ipar ] = fonte[ ipar ]*factor
+
 
         return self.temp
 

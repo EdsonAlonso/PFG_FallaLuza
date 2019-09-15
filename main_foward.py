@@ -2,14 +2,6 @@ import numpy as np
 from Models import rect
 from Plots import plotRect
 
-def alp(x, y):
-    fun = -(x * y) ** (0.5) * np.sin(x) * np.sin(y)
-    return fun
-
-def phi( x,y ):
-    return ( np.linalg.norm( x - y ) )**2
-
-
 if __name__ == "__main__":
     xobs = np.linspace( -1000,1000,300 )
     zobs = np.zeros( len( xobs ) )
