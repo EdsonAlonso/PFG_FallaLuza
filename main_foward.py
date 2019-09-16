@@ -7,12 +7,6 @@ if __name__ == "__main__":
     zobs = np.zeros( len( xobs ) )
     xmin, xmax = -0.5, 0.5
     ymin, ymax =  2.0, 6.0
-    min_bounds = [xmin, ymin, 5e4]
-    max_bounds = [xmax, ymax, 5e4]
-    npop = 500
-    pmut = 0.1
-    ngera = int( 500 )
-    npar = len( min_bounds )
 
     model = rect( -100,100,200,800,2 )
     model_gz = model.Gz( xobs, zobs )
