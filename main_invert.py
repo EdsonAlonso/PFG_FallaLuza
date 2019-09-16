@@ -1,7 +1,7 @@
 from Data.Population import *
 from Data.Functionals import phi
 from Models import rect
-from Genetic.Operators import *
+from GeneticAlgorithm.Operators import *
 import matplotlib.pyplot as plt
 from time import time
 
@@ -16,7 +16,7 @@ xmin, xmax = -1000.0, 1000.0
 ymin, ymax = 200, 800.0
 min_bounds = [xmin, ymin, 1e6]
 max_bounds = [xmax, ymax, 1e10]
-nfontes = 20
+nfontes = 40
 nind = 500
 pmut = 0.1
 ngera = int( 1e5 )

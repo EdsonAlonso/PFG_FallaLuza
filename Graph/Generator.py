@@ -1,13 +1,31 @@
 import networkx as nx
 
-if __name__ == '__main__':
-    G = nx.DiGraph( )
-    x = [0.0,1.0]
-    y = [1.0,2.0]
+class Graph:
 
-    G.add_node( ( x[ 0 ],y[ 0 ] ) )
-    G.add_node( ( x[ 1 ],y[ 1 ] ) )
+    def __init__( self ):
+        self.graph = nx.Graph( )
+        self.MST = None
 
-    G.add_edge( (0,1),(1,2), weight = 0.9)
-    print( f' Nodes: {G.nodes}' )
-    print( f' Edges: {G.edges.data( )}' )
+    def createnodes( self, population ):
+        self.__init__( )
+        """
+
+        :param population: array as [x,y]
+               x: array
+               y: array
+        :return: G = Directed Graph where nodes are [x,y]
+
+        """
+        [ self.graph.add_node( ( population[ i,0 ], population[ i, 1 ] ) )\
+          for i in range( population.shape[ 0 ] )  ]
+
+        return self.graph
+
+    def calculateMST( self ):
+
+        for node in self.graph.nodes:
+            self.graph.add_edge( *node )
+
+        self.MST = nx.minimum_spanning_tree( self.graph )
+
+        return nx.minimum_spanning_tree( self.graph )
