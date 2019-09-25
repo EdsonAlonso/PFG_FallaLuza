@@ -7,12 +7,11 @@
 
 # -------- Import Python internal libraries ---------
 import numpy as np
-import math
-from math import sqrt
-import networkx as nx
 from scipy.spatial.distance import mahalanobis
+from Graph.graphs import getgraph
 
 # -------- L1 Norm (sum norm) ---------
+
 
 def l1dist(x_coord,y_coord):
     '''
@@ -75,8 +74,6 @@ def l2dist(x_coord,y_coord):
 
 
 #-----------Importing the getgraph function----------
-
-from modules.graphs import getgraph
 
 
 # -------- Graph L2 Distance Function ---------

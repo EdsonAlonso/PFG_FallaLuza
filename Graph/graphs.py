@@ -1,9 +1,8 @@
 # -------- Import Python internal libraries ---------
 import numpy as np
 import networkx as nx
-from scipy.spatial.distance import mahalanobis
-from modules.distances import l2dist
-
+import Graph.graphs_distances
+import matplotlib.pyplot as plt
 # -------- Creating a Graph and its MST ---------
 
 def getgraph(M):
@@ -18,18 +17,18 @@ def getgraph(M):
     TSG - MST of G
     '''
     #Creates x and y arrays
-    x = M[0]
+    x = M[:,0]
     x = np.array(x)
     
-    y = M[1]
+    y = M[:,1]
     y = np.array(y)   
-
     #creates the graph and the MST:
     G = nx.Graph()
     for i in range(len(x)):
         G.add_node(i ,pos=(x[i],y[i]))
         for j in range(len(x)):
-            G.add_edge(i,j,weight=l2dist(x,y)[i][j])
+            G.add_edge(i, j, weight=Graph.graphs_distances.l2dist(x, y)[i][j])
+
     TSG = nx.minimum_spanning_tree(G)
 
     return G,TSG
