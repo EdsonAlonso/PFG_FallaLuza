@@ -109,7 +109,7 @@ class distgraphl2( ):
 
         self.phi = np.sqrt( self.phi )
 
-        return self.phi,self.dmG
+        return self.phi#,self.dmG
 
 # -------- Graph L1 Distance Function ---------
 
@@ -144,7 +144,7 @@ class distgraphl1:
         for i in range( len(dm1) ):
             self.phi += abs(dm1[i] - self.dmG)
 
-        return self.phi,self.dmG
+        return self.phi#,self.dmG
 
 # -------- Graph Mahalanobis Distance Function ---------
 
@@ -163,10 +163,10 @@ class distgraphmaha:
         dmG - float
         '''
         #Separates the entries of the M matrix:
-        x = M[0]
+        x = M[:,0]
         x = np.array(x)
 
-        y = M[0]
+        y = M[:,1]
         y = np.array(y)
 
         #creates a graph and its MST:
@@ -192,7 +192,7 @@ class distgraphmaha:
         invC = np.linalg.inv(C)
         self.m = mahalanobis(u,v,invC)
 
-        return self.m,self.dmG
+        return self.m #, self.dmG
 
 class DistFactory:
     

@@ -29,6 +29,6 @@ def getgraph(M):
         for j in range(len(x)):
             G.add_edge(i, j, weight=Graph.graphs_distances.l2dist(x, y)[i][j])
 
-    TSG = nx.minimum_spanning_tree(G)
+    TSG = nx.minimum_spanning_tree( G )
 
     return G,TSG

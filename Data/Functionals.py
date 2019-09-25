@@ -1,6 +1,7 @@
 import numpy as np
+from Graph.graphs_distances import getDistance
 
-def phi( gzmodel, gzcalc ):
+def phi1( gzmodel, gzcalc ):
     res = [ ]
     for gz in gzcalc:
         soma = 0
@@ -9,6 +10,18 @@ def phi( gzmodel, gzcalc ):
         res.append( np.sqrt( soma ) )
         soma = 0
     return  res
+
+def theta( chamada, M ):
+    res2 = [ ]
+    for m in M:
+        res2.append( getDistance( chamada,  m ) )
+        
+    return np.array( res2 ) 
+
+
+def phi( gzmodel, gzcalc , chamada, M , mu):
+    
+    return phi1( gzmodel, gzcalc) + mu*theta( chamada, M )
 
 def somadict( dict1, dict2 ):
     soma = [ ]
