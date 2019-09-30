@@ -143,7 +143,6 @@ class distgraphl1:
         self.phi = 0.0
         for i in range( len(dm1) ):
             self.phi += abs(dm1[i] - self.dmG)
-
         return self.phi#,self.dmG
 
 # -------- Graph Mahalanobis Distance Function ---------
@@ -183,15 +182,17 @@ class distgraphmaha:
 
         # computing the mean of the MST:
         self.dmG = np.mean( np.array(dm1) )
+        
+        N = np.c_[ u,v ]
+        C = np.cov( N )
 
-        N = np.array( (u,v) )
-        C = np.cov( N.T )
-        if np.linalg.det(C) == 0:
-            np.fill_diagonal(C,1e10,wrap = True)
+        if np.linalg.det( C ) < 1e-100:
+            np.fill_diagonal( C, 1e10)
+        
+        invC = np.linalg.inv( C )
 
-        invC = np.linalg.inv(C)
-        self.m = mahalanobis(u,v,invC)
-
+        self.m = abs( mahalanobis( u,v,invC ) - self.dmG )
+        
         return self.m #, self.dmG
 
 class DistFactory:
