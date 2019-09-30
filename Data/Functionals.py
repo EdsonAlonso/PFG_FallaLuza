@@ -8,19 +8,19 @@ def phi1( gzmodel, gzcalc ):
         for i in range( len( gz ) ):
             soma += ( gzmodel[ i ] - gz[ i ] )**2
         res.append( np.sqrt( soma ) )
-        soma = 0
-    return  res
+        
+    return  np.array( res )
 
 def theta( chamada, M ):
     res2 = [ ]
     for m in M:
         res2.append( getDistance( chamada,  m ) )
-        
+
     return np.array( res2 ) 
 
 
 def phi( gzmodel, gzcalc , chamada, M , mu):
-    
+
     return phi1( gzmodel, gzcalc) + mu*theta( chamada, M )
 
 def somadict( dict1, dict2 ):
