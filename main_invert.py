@@ -1,7 +1,7 @@
 from Data.Population import *
 from Data.Functionals import phi
 from Models import rect
-from GeneticAlgorithm.Operators import *
+from Genetic.Operators import *
 import matplotlib.pyplot as plt
 from time import time
 

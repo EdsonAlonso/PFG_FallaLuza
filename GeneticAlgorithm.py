@@ -1,25 +1,31 @@
 from Data.Population import *
-from Data.Functionals import phi
 from Genetic.Operators import *
+import numpy as np
 
-xobs = np.linspace(-1000,1000)
-zobs = np.zeros((len(xobs)))
+
 class GeneticAlgorithm( ):
 
-    def __init__( self, Fontes, fit, modelfunction, min_bounds, max_bounds, pmut ):
-        self.fit  = fit
-        self.fontes = Fontes
-        self.pop = None
+    def __init__( self, fitfunction, fit_param, min_bounds, max_bounds, pmut, nfontes, nind ):
+        self.fit_function  = fitfunction
         self.winner = None
         self.min_bounds = min_bounds
         self.max_bounds = max_bounds
         self.pmut = pmut
-        self.model_gz = modelfunction
-
+        self.fit_params = fit_param
+        self.nfontes = nfontes
+        self.nind = nind
+        self.xobs = np.linspace( min_bounds[ 0 ], max_bounds[ 0 ] , 500)
+        self.zobs = np.zeros( len( self.xobs ) )
 
     def Initialize( self ):
         self.pop = Fontes( )
-        self.__fontes__ = self.pop.Gera_from_Existing( self.fontes )
+        self.pop.Gera( self.min_bounds, self.max_bounds, self.nfontes, self.nind )
+        self.fontes = self.pop.asArray( )
+        self.fontes_gz = self.pop.Gz( self.xobs, self.zobs )
+
+    def FirstFit( self ):
+        self.fit = self.fit_function(self.fit_params[ 0], self.fontes_gz, self.fit_params[ 1 ], \
+                                     self.fontes, self.fit_params[ 2 ])
         self.iwinner = np.argmin( self.fit )
         self.winner = self.fontes[ self.iwinner ]
         self.melhor = self.fit[ self.iwinner ]
@@ -27,9 +33,12 @@ class GeneticAlgorithm( ):
     def start( self, ngera ):
         self.ngera = int( ngera )
         self.Initialize( )
+        self.FirstFit( )
+
         c = 0
         for i in range( self.ngera ):
             c += 1
+
             print( f'Geração { i }' )
             # Etapa 03: Selecao dos pais (roleta viciada)
 
@@ -48,16 +57,15 @@ class GeneticAlgorithm( ):
             # Etapa 06: Aplicacao de mutacao em alguns individuos da populacao de filhos:
 
             filhos = operator( 'Mutacao', filhos, self.pmut, self.min_bounds, self.max_bounds )
-            gz_fonts = self.pop.Gz( xobs, zobs, self.pop.Gera_from_Existing( filhos ) )
+            self.fontes_gz = self.pop.Gz( self.xobs, self.zobs, self.pop.Gera_from_Existing( filhos ) )
 
             # Etapa 07: Calculo das aptidoes dos filhos:
 
-            fit_filhos = phi( self.model_gz, gz_fonts )
+            fit_filhos = self.fit_function(self.fit_params[ 0 ], self.fontes_gz, self.fit_params[ 1 ], \
+                                     filhos, self.fit_params[ 2 ])
 
             # Etapa 08: Elitismo para colocar os filhos na populacao original:
             self.fontes, self.fit = operator( 'Elitismo', self.fontes, self.fit, filhos, fit_filhos )
-
-            print( self.fontes[ np.argmin( self.fit ) ] )
 
             if self.fit[ np.argmin( self.fit ) ] < self.melhor:
                 c = 0
@@ -73,5 +81,3 @@ class GeneticAlgorithm( ):
 
         self.iwinner = np.argmin( self.fit )
         self.winner = self.fontes[ self.iwinner ]
-
-
