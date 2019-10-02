@@ -150,7 +150,7 @@ class distgraphl1:
 
 class distgraphmaha:
 
-    def calculate( self, M ):
+    def calculate(self, M):
         '''
         This function recives a matrix, in with the colum i means the coordinates of a point in the i axis, creates a graph as well as its MST and returns the mahalanobis distances of the vertices in the MST as well as the as the average itself (dmG).
     .
@@ -162,37 +162,39 @@ class distgraphmaha:
         m - float - mahalanobis distance
         dmG - float
         '''
-        #Separates the entries of the M matrix:
-        x = M[:,0]
+        # Separates the entries of the M matrix:
+        x = M[:, 0]
         x = np.array(x)
 
-        y = M[:,1]
+        y = M[:, 1]
         y = np.array(y)
 
-        #creates a graph and its MST:
-        self.G,self.TSG = Graph.graphs.getgraph(M)
+        # creates a graph and its MST:
+        self.G, self.TSG = Graph.graphs.getgraph(M)
 
         # get the weights of the undirected Graph:
         dm1 = []
-        u   = []
-        v   = []
+        u = []
+        v = []
         for (i, j, wt) in self.TSG.edges.data('weight'):
             u.append(x[i])
             v.append(y[j])
             dm1.append(wt)
 
         # computing the mean of the MST:
-        self.dmG = np.mean( np.array(dm1) )
+        self.dmG = np.mean(np.array(dm1))
 
-        N = np.array( (u,v) )
-        C = np.cov( N.T )
-        if np.linalg.det(C) == 0:
-            np.fill_diagonal(C,1e10,wrap = True)
+        N = np.c_[u, v]
+        C = np.cov(N)
+
+        if np.linalg.det(C) < 1e-100:
+            np.fill_diagonal(C, 1e10)
 
         invC = np.linalg.inv(C)
-        self.m = mahalanobis(u,v,invC)
 
-        return self.m #, self.dmG
+        self.m = abs(mahalanobis(u, v, invC) - self.dmG)
+
+        return self.m  # , self.dmG
 
 class DistFactory:
     
