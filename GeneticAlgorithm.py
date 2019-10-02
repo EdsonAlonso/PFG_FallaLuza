@@ -1,6 +1,7 @@
 from Data.Population import *
 from Genetic.Operators import *
 import numpy as np
+from Data.Functionals import theta
 
 
 class GeneticAlgorithm( ):
@@ -16,6 +17,7 @@ class GeneticAlgorithm( ):
         self.nind = nind
         self.xobs = np.linspace( min_bounds[ 0 ], max_bounds[ 0 ] , 500)
         self.zobs = np.zeros( len( self.xobs ) )
+        self.bests_theta = [ ]
 
     def Initialize( self ):
         self.pop = Fontes( )
@@ -66,6 +68,10 @@ class GeneticAlgorithm( ):
 
             # Etapa 08: Elitismo para colocar os filhos na populacao original:
             self.fontes, self.fit = operator( 'Elitismo', self.fontes, self.fit, filhos, fit_filhos )
+            
+            novotheta = theta( self.fit_params[ 1 ], self.fontes )
+
+            self.bests_theta.append( novotheta[ np.argmin( self.fit ) ] )
 
             if self.fit[ np.argmin( self.fit ) ] < self.melhor:
                 c = 0
