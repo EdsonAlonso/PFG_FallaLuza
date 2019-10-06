@@ -1,7 +1,7 @@
 # -------- Import Python internal libraries ---------
 import numpy as np
 import networkx as nx
-import Graph.graphs_distances
+from scipy.spatial import distance_matrix
 import matplotlib.pyplot as plt
 # -------- Creating a Graph and its MST ---------
 
@@ -17,18 +17,17 @@ def getgraph(M):
     TSG - MST of G
     '''
     #Creates x and y arrays
-    x = M[:,0]
-    x = np.array(x)
+    X = M[ :,0:2 ]
     
-    y = M[:,1]
-    y = np.array(y)   
-    #creates the graph and the MST:
-    G = nx.Graph()
-    for i in range(len(x)):
-        G.add_node(i ,pos=(x[i],y[i]))
-        for j in range(len(x)):
-            G.add_edge(i, j, weight=Graph.graphs_distances.l2dist(x, y)[i][j])
-
+    Weight = distance_matrix( X,X )
+    
+    G = nx.from_numpy_matrix( Weight )
+    
     TSG = nx.minimum_spanning_tree( G )
 
-    return G,TSG
+    return TSG
+
+
+
+
+    
