@@ -124,11 +124,11 @@ class distgraphmaha:
         N = np.c_[u, v]
         C = np.cov(N)
 
-        np.fill_diagonal(C, 1e5)
+        np.fill_diagonal(C, 1e8)
 
         invC = np.linalg.inv(C)
 
-        self.m = abs(mahalanobis(u, v, C) )
+        self.m = abs(mahalanobis(u, v, invC) - self.dmG )
 
         return self.m  # , self.dmG
 
