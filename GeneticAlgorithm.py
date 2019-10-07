@@ -6,7 +6,7 @@ from Data.Functionals import theta
 
 class GeneticAlgorithm( ):
 
-    def __init__( self, fitfunction, fit_param, min_bounds, max_bounds, pmut, nfontes, nind ):
+    def __init__( self, fitfunction, fit_param, min_bounds, max_bounds, pmut, nfontes, nind, nobs ):
         self.fit_function  = fitfunction
         self.winner = None
         self.min_bounds = min_bounds
@@ -15,7 +15,7 @@ class GeneticAlgorithm( ):
         self.fit_params = fit_param
         self.nfontes = nfontes
         self.nind = nind
-        self.xobs = np.linspace( min_bounds[ 0 ], max_bounds[ 0 ] , 500)
+        self.xobs = np.linspace( min_bounds[ 0 ], max_bounds[ 0 ] , nobs )
         self.zobs = np.zeros( len( self.xobs ) )
         self.bests_theta = [ ]
 
